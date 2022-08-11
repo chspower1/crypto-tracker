@@ -59,8 +59,8 @@ interface ICoins {
     type: string;
 }
 function Coins() {
-    const { isLoading, data } = useQuery<ICoins[]>(["Coins"], fetchCoins);
-    const coins = data;
+    const { isLoading, data: coins } = useQuery<ICoins[]>(["Coins"], fetchCoins);
+
     return (
         <Container>
             <Header>
@@ -69,13 +69,13 @@ function Coins() {
             {!isLoading ? (
                 <CoinList>
                     {coins?.slice(0, 100).map((coin) => (
-                        <Link key={coin.id} to={coin.id} state={coin.name}>
+                        <Link key={coin?.id} to={coin?.id} state={coin?.name}>
                             <Coin>
                                 <Img
-                                    src={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`}
+                                    src={`https://cryptocurrencyliveprices.com/img/${coin?.id}.png`}
                                     alt="#"
                                 />
-                                {coin.symbol}
+                                {coin?.symbol}
                             </Coin>
                         </Link>
                     ))}

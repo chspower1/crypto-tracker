@@ -1,10 +1,9 @@
-import { Link, Route, RouterProps, Routes, useLocation, useParams } from "react-router-dom";
+import { Link, Route, Routes, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
 import Chart from "./Chart";
 import Price from "./Price";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTickers } from "./api";
+import { fetchInfo, fetchTickers } from "./api";
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -52,6 +51,8 @@ const Loading = styled.h1`
     place-items: center;
     min-height: 80vh;
 `;
+
+// Tickers Interface
 interface ITickers {
     id: string;
     name: string;
@@ -89,19 +90,91 @@ interface Usd {
     ath_date: Date;
     percent_from_price_ath: number;
 }
+// CoinInfo Interface
+interface ICoinInfo {
+    id: string;
+    name: string;
+    symbol: string;
+    rank: number;
+    is_new: boolean;
+    is_active: boolean;
+    type: string;
+    tags: Tag[];
+    team: Team[];
+    description: string;
+    message: string;
+    open_source: boolean;
+    started_at: Date;
+    development_status: string;
+    hardware_wallet: boolean;
+    proof_type: string;
+    org_structure: string;
+    hash_algorithm: string;
+    links: Links;
+    links_extended: LinksExtended[];
+    whitepaper: Whitepaper;
+    first_data_at: Date;
+    last_data_at: Date;
+}
+
+interface Links {
+    explorer: string[];
+    facebook: string[];
+    reddit: string[];
+    source_code: string[];
+    website: string[];
+    youtube: string[];
+}
+
+interface LinksExtended {
+    url: string;
+    type: string;
+    stats?: Stats;
+}
+
+interface Stats {
+    subscribers?: number;
+    contributors?: number;
+    stars?: number;
+    followers?: number;
+}
+
+interface Tag {
+    id: string;
+    name: string;
+    coin_counter: number;
+    ico_counter: number;
+}
+
+interface Team {
+    id: string;
+    name: string;
+    position: string;
+}
+
+interface Whitepaper {
+    link: string;
+    thumbnail: string;
+}
 
 function Coin() {
     const { coinId } = useParams();
-    const { isLoading, data } = useQuery<ITickers>(["Tickers", coinId], () =>
-        fetchTickers(coinId!)
+    const { isLoading: tickersLoading, data: tickers } = useQuery<ITickers>(
+        ["Tickers", coinId],
+        () => fetchTickers(coinId!)
     );
-    const tickers = data;
+    const { isLoading: coinInfoLoading, data: coinInfo } = useQuery<ICoinInfo>(
+        ["CoinInfo", coinId],
+        () => fetchInfo(coinId!)
+    );
+    const loading = tickersLoading && coinInfoLoading;
+
     return (
         <Container>
             <Header>
                 <Title>{coinId}</Title>
             </Header>
-            {!isLoading ? (
+            {!loading ? (
                 <>
                     <Overview>
                         <OverviewItem>
