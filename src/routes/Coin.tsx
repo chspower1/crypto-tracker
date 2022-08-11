@@ -1,8 +1,10 @@
-import { Link, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Link, Route, RouterProps, Routes, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import Chart from "./Chart";
 import Price from "./Price";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTickers } from "./api";
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -44,8 +46,13 @@ const OverviewItem = styled.div`
         margin-bottom: 10px;
     }
 `;
-
-export interface CoinInterface {
+const Loading = styled.h1`
+    font-size: 50px;
+    display: grid;
+    place-items: center;
+    min-height: 80vh;
+`;
+interface ITickers {
     id: string;
     name: string;
     symbol: string;
@@ -59,11 +66,11 @@ export interface CoinInterface {
     quotes: Quotes;
 }
 
-export interface Quotes {
+interface Quotes {
     USD: Usd;
 }
 
-export interface Usd {
+interface Usd {
     price: number;
     volume_24h: number;
     volume_24h_change_24h: number;
@@ -85,50 +92,49 @@ export interface Usd {
 
 function Coin() {
     const { coinId } = useParams();
-    const [coin, setCoin] = useState<CoinInterface>();
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        (async () => {
-            const json = await (
-                await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-            ).json();
-            console.log(json);
-            setCoin(json);
-        })();
-    }, [coinId]);
+    const { isLoading, data } = useQuery<ITickers>(["Tickers", coinId], () =>
+        fetchTickers(coinId!)
+    );
+    const tickers = data;
     return (
         <Container>
             <Header>
                 <Title>{coinId}</Title>
             </Header>
-            <Overview>
-                <OverviewItem>
-                    <h5>Rank</h5>
-                    <span>{coin?.rank}</span>
-                </OverviewItem>
-                <OverviewItem>
-                    <h5>Symbol</h5>
-                    <span>{coin?.symbol}</span>
-                </OverviewItem>
-                <OverviewItem>
-                    <h5>Price</h5>
-                    <span>{coin?.quotes.USD.price.toFixed(0)} $</span>
-                </OverviewItem>
-            </Overview>
-            <Overview>
-                <OverviewItem>
-                    <h5>Max price</h5>
-                    <span>{coin?.quotes.USD.ath_price.toFixed(0)} $</span>
-                </OverviewItem>
-                <OverviewItem>
-                    <h5>Supply</h5>
-                    <span>{coin?.total_supply}</span>
-                </OverviewItem>
-                <OverviewItem>
-                    <h5>Max supply</h5>
-                    <span>{coin?.max_supply}</span>
-                </OverviewItem>
-            </Overview>
+            {!isLoading ? (
+                <>
+                    <Overview>
+                        <OverviewItem>
+                            <h5>Rank</h5>
+                            <span>{tickers?.rank}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Symbol</h5>
+                            <span>{tickers?.symbol}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Price</h5>
+                            <span>{tickers?.quotes.USD.price.toFixed(2)} $</span>
+                        </OverviewItem>
+                    </Overview>
+                    <Overview>
+                        <OverviewItem>
+                            <h5>Max price</h5>
+                            <span>{tickers?.quotes.USD.ath_price.toFixed(2)} $</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Supply</h5>
+                            <span>{tickers?.total_supply}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Max supply</h5>
+                            <span>{tickers?.max_supply}</span>
+                        </OverviewItem>
+                    </Overview>
+                </>
+            ) : (
+                <Loading>Loding...</Loading>
+            )}
             <Link to={`/${coinId}/chart`}>chart</Link>
             <Link to={`/${coinId}/price`}>price</Link>
             <Routes>

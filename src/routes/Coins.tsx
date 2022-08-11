@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCoins } from "./api";
 
 const Container = styled.div`
     padding: 20px;
@@ -48,42 +49,26 @@ const Loading = styled.h1`
     min-height: 80vh;
 `;
 
-interface CoinInterface {
+interface ICoins {
     id: string;
     name: string;
     symbol: string;
     rank: number;
-    circulating_supply: number;
-    total_supply: number;
-    max_supply: number;
-    beta_value: number;
-    first_data_at: string;
-    last_updated: string;
-    quotes: any;
+    is_new: boolean;
+    is_active: boolean;
+    type: string;
 }
-
 function Coins() {
-    const [coins, setCoins] = useState<CoinInterface[]>([]);
-    const [loading, setLoading] = useState(false);
-    useEffect(() => {
-        (async () => {
-            const json = (
-                await (await fetch("https://api.coinpaprika.com/v1/tickers")).json()
-            ).slice(0, 100);
-            console.log(json);
-            setCoins(json);
-        })();
-        setLoading(true);
-    }, []);
-
+    const { isLoading, data } = useQuery<ICoins[]>(["Coins"], fetchCoins);
+    const coins = data;
     return (
         <Container>
             <Header>
                 <Title>Coin World</Title>
             </Header>
-            {loading ? (
+            {!isLoading ? (
                 <CoinList>
-                    {coins.map((coin) => (
+                    {coins?.slice(0, 100).map((coin) => (
                         <Link key={coin.id} to={coin.id} state={coin.name}>
                             <Coin>
                                 <Img

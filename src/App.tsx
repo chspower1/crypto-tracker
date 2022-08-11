@@ -3,7 +3,7 @@ import { createGlobalStyle } from "styled-components";
 import Router from "./Router";
 import SebangBold from "./fonts/SEBANG-Gothic-OTF-Bold.otf";
 import Sebang from "./fonts/SEBANG-Gothic-OTF.otf";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const styled = { createGlobalStyle };
 
 const GlobalStyled = styled.createGlobalStyle`
@@ -163,12 +163,13 @@ const GlobalStyled = styled.createGlobalStyle`
         text-decoration: none;
     }
 `;
-
 function App() {
     return (
         <>
             <GlobalStyled />
+
             <Router />
+            <ReactQueryDevtools />
         </>
     );
 }
