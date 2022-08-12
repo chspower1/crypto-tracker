@@ -13,15 +13,11 @@ interface IChart {
     volume: string;
     market_cap: number;
 }
-interface IData {
-    x: Date;
-    y: number[];
-}
 
 export default function Chart() {
     const { coinId } = useParams();
-    console.log(coinId);
     const { isLoading, data } = useQuery<IChart[]>(["Chart"], () => fetchChart(coinId!));
+
     return (
         <div>
             {isLoading ? (

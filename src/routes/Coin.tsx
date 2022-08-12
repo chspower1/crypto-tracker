@@ -18,14 +18,20 @@ const Container = styled.div`
 `;
 const Header = styled.header`
     display: flex;
+
     width: 100%;
     padding: 10px 20px;
     justify-content: space-between;
-    font-size: 40px;
+    align-items: center;
 `;
 const Title = styled.h1`
     text-align: center;
+    font-size: 35px;
     color: ${(props) => props.theme.textColor};
+`;
+const Img = styled.img`
+    height: 40px;
+    width: 40px;
 `;
 const Overview = styled.section`
     display: flex;
@@ -56,17 +62,21 @@ const Loading = styled.h1`
     place-items: center;
     min-height: 80vh;
 `;
-const Btn = styled.button`
+const HomeBtn = styled.button`
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
-    background-color: ${(props) => props.theme.textColor};
-    &:hover {
-        cursor: pointer;
-        color: ${(props) => props.theme.accentColor};
-    }
+    background-color: #3275ac;
 `;
-const Content = styled.div``;
+const ContentBtn = styled(HomeBtn)`
+    width: 50%;
+    margin: 5px 20px;
+`;
+const Content = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+`;
 
 // --------------------interface--------------------------
 // Tickers Interface
@@ -178,7 +188,10 @@ function Coin() {
     const { coinId } = useParams();
     const { isLoading: tickersLoading, data: tickers } = useQuery<ITickers>(
         ["Tickers", coinId],
-        () => fetchTickers(coinId!)
+        () => fetchTickers(coinId!),
+        {
+            refetchInterval: 5000,
+        }
     );
     const { isLoading: coinInfoLoading, data: coinInfo } = useQuery<ICoinInfo>(
         ["CoinInfo", coinId],
@@ -194,10 +207,11 @@ function Coin() {
                 </Helmet>
             </HelmetProvider>
             <Header>
+                <Img src={`https://cryptocurrencyliveprices.com/img/${coinId}.png`} alt="#" />
                 <Title>{!loading ? coinId : "Loading..."}</Title>
-                <Link to="/">
-                    <Btn>Home</Btn>
-                </Link>
+                <HomeBtn>
+                    <Link to="/">Home</Link>
+                </HomeBtn>
             </Header>
             {!loading ? (
                 <>
@@ -234,12 +248,12 @@ function Coin() {
                 <Loading>Loding...</Loading>
             )}
             <Content>
-                <Link to={`/${coinId}/chart`}>
-                    <Btn>chart</Btn>
-                </Link>
-                <Link to={`/${coinId}/price`}>
-                    <Btn>price</Btn>
-                </Link>
+                <ContentBtn>
+                    <Link to={`/${coinId}/chart`}>chart</Link>
+                </ContentBtn>
+                <ContentBtn>
+                    <Link to={`/${coinId}/price`}>price</Link>
+                </ContentBtn>
             </Content>
             <Routes>
                 <Route path="chart" element={<Chart />} />
