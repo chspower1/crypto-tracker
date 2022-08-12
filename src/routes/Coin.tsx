@@ -4,6 +4,9 @@ import Chart from "./Chart";
 import Price from "./Price";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInfo, fetchTickers } from "./api";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+
+// ------------------------styled-components-----------------------
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -15,8 +18,10 @@ const Container = styled.div`
 `;
 const Header = styled.header`
     display: flex;
-    justify-content: center;
-    font-size: 60px;
+    width: 100%;
+    padding: 10px 20px;
+    justify-content: space-between;
+    font-size: 40px;
 `;
 const Title = styled.h1`
     text-align: center;
@@ -51,7 +56,19 @@ const Loading = styled.h1`
     place-items: center;
     min-height: 80vh;
 `;
+const Btn = styled.button`
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background-color: ${(props) => props.theme.textColor};
+    &:hover {
+        cursor: pointer;
+        color: ${(props) => props.theme.accentColor};
+    }
+`;
+const Content = styled.div``;
 
+// --------------------interface--------------------------
 // Tickers Interface
 interface ITickers {
     id: string;
@@ -171,8 +188,16 @@ function Coin() {
 
     return (
         <Container>
+            <HelmetProvider>
+                <Helmet>
+                    <title>{!loading ? coinId : "Loading..."}</title>
+                </Helmet>
+            </HelmetProvider>
             <Header>
-                <Title>{coinId}</Title>
+                <Title>{!loading ? coinId : "Loading..."}</Title>
+                <Link to="/">
+                    <Btn>Home</Btn>
+                </Link>
             </Header>
             {!loading ? (
                 <>
@@ -208,8 +233,14 @@ function Coin() {
             ) : (
                 <Loading>Loding...</Loading>
             )}
-            <Link to={`/${coinId}/chart`}>chart</Link>
-            <Link to={`/${coinId}/price`}>price</Link>
+            <Content>
+                <Link to={`/${coinId}/chart`}>
+                    <Btn>chart</Btn>
+                </Link>
+                <Link to={`/${coinId}/price`}>
+                    <Btn>price</Btn>
+                </Link>
+            </Content>
             <Routes>
                 <Route path="chart" element={<Chart />} />
                 <Route path="price" element={<Price />} />

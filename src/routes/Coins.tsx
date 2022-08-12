@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCoins } from "./api";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Container = styled.div`
     padding: 20px;
@@ -63,6 +64,11 @@ function Coins() {
 
     return (
         <Container>
+            <HelmetProvider>
+                <Helmet>
+                    <title>{!isLoading ? "Coin World" : "Loading..."}</title>
+                </Helmet>
+            </HelmetProvider>
             <Header>
                 <Title>Coin World</Title>
             </Header>
