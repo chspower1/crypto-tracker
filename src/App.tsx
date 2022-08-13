@@ -6,9 +6,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { darkTheme, lightTheme } from "./theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
-const styled = { createGlobalStyle };
 
-const GlobalStyled = styled.createGlobalStyle`
+const GlobalStyled = createGlobalStyle`
     @font-face {
         font-family: "SebangBold";
         src: url(${SebangBold});
