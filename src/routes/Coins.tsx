@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCoins } from "./api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "./../atoms";
 
 const Container = styled.div`
     padding: 20px;
@@ -61,7 +63,9 @@ interface ICoins {
 }
 function Coins() {
     const { isLoading, data: coins } = useQuery<ICoins[]>(["Coins"], fetchCoins);
-
+    const isDark = useRecoilValue(isDarkAtom);
+    const setIsDark = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom = () => setIsDark((cur) => !cur);
     return (
         <Container>
             <HelmetProvider>
@@ -70,6 +74,7 @@ function Coins() {
                 </Helmet>
             </HelmetProvider>
             <Header>
+                <button onClick={toggleDarkAtom}>{isDark ? "DarkMode" : "LightMode"}</button>
                 <Title>Coin World</Title>
             </Header>
             {!isLoading ? (

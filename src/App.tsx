@@ -1,9 +1,11 @@
-import React from "react";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import Router from "./Router";
 import SebangBold from "./fonts/SEBANG-Gothic-OTF-Bold.otf";
 import Sebang from "./fonts/SEBANG-Gothic-OTF.otf";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { darkTheme, lightTheme } from "./theme";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./atoms";
 const styled = { createGlobalStyle };
 
 const GlobalStyled = styled.createGlobalStyle`
@@ -165,11 +167,14 @@ const GlobalStyled = styled.createGlobalStyle`
     }
 `;
 function App() {
+    const isDark = useRecoilValue(isDarkAtom);
     return (
         <>
-            <GlobalStyled />
-            <Router />
-            <ReactQueryDevtools />
+            <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+                <GlobalStyled />
+                <Router />
+                <ReactQueryDevtools />
+            </ThemeProvider>
         </>
     );
 }
