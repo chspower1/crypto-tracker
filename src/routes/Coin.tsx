@@ -1,14 +1,14 @@
-import { Link, Route, Routes, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Chart from "./Chart";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInfo, fetchTickers } from "./api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { LMode, ModeBtn } from "./Coins";
+import { LModeBtn, ModeBtn } from "./Coins";
 import { DarkMode } from "@styled-icons/material/DarkMode";
 import { LightMode } from "@styled-icons/material-rounded/LightMode";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { isDarkAtom } from "./../atoms";
+import { useRecoilState } from "recoil";
+import { isDarkState } from "./../atoms";
 
 // ------------------------styled-components-----------------------
 const Container = styled.div`
@@ -16,22 +16,34 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    max-width: 480px;
-    margin: 0 auto;
+    width: 50%;
+    height: 100vh;
+    max-width: 512px;
+    padding: 0px 20px;
+    margin: auto;
+    @media screen and (max-width: 1024px) {
+        width: 90%;
+    }
 `;
 const Header = styled.header`
     display: flex;
-
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 0px;
     justify-content: space-between;
     align-items: center;
+    @media screen and (max-width: 1024px) {
+        height: 200px;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
 `;
 const Title = styled.h1`
     text-align: center;
     font-size: 35px;
     color: ${(props) => props.theme.textColor};
+    @media screen and (max-width: 1024px) {
+        font-size: 30px;
+    }
 `;
 const Img = styled.img`
     height: 40px;
@@ -43,7 +55,7 @@ const Overview = styled.section`
     align-items: center;
     width: 100%;
     border-radius: 10px;
-    background-color: ${(props) => props.theme.btnColor};
+    background-color: ${(props) => props.theme.ContentBgColor};
     margin: 10px 30px;
     padding: 20px;
 `;
@@ -60,29 +72,90 @@ const OverviewItem = styled.div`
         margin-bottom: 10px;
     }
 `;
-const Loading = styled.h1`
-    font-size: 50px;
-    display: grid;
-    place-items: center;
-    min-height: 80vh;
-`;
 const HomeBtn = styled.button`
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: none;
-    color: white;
-    background-color: #3275ac;
-`;
-const ContentBtn = styled(HomeBtn)`
-    width: 100%;
-    margin-bottom: 20px;
-`;
-const Content = styled.div`
-    width: 100%;
-    display: flex;
-    justify-content: space-evenly;
+    @media screen and (max-width: 1024px) {
+        position: fixed;
+        right: 30px;
+        top: 30px;
+    }
 `;
 
+function Coin() {
+    const { coinId } = useParams();
+    const { isLoading: tickersLoading, data: tickers } = useQuery<ITickers>(
+        ["Tickers", coinId],
+        () => fetchTickers(coinId!),
+        {
+            refetchInterval: 5000,
+        }
+    );
+    const { isLoading: coinInfoLoading } = useQuery<ICoinInfo>(["CoinInfo", coinId], () =>
+        fetchInfo(coinId!)
+    );
+    const loading = tickersLoading && coinInfoLoading;
+    const [isDark, setIsDark] = useRecoilState(isDarkState);
+    const toggleDarkAtom = () => setIsDark((cur) => !cur);
+
+    return (
+        <Container>
+            <HelmetProvider>
+                <Helmet>
+                    <title>{!loading ? coinId : "Loading..."}</title>
+                </Helmet>
+            </HelmetProvider>
+            <Header>
+                <Img src={`https://cryptocurrencyliveprices.com/img/${coinId}.png`} alt="#" />
+                <Title>{!loading ? coinId : "Loading..."}</Title>
+                <Link to="/">
+                    <HomeBtn>Home</HomeBtn>
+                </Link>
+                {isDark ? (
+                    <LModeBtn onClick={toggleDarkAtom}>
+                        <LightMode />
+                    </LModeBtn>
+                ) : (
+                    <ModeBtn onClick={toggleDarkAtom}>
+                        <DarkMode />
+                    </ModeBtn>
+                )}
+            </Header>
+            {!loading && (
+                <>
+                    <Overview>
+                        <OverviewItem>
+                            <h5>Rank</h5>
+                            <span>{tickers?.rank}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Symbol</h5>
+                            <span>{tickers?.symbol}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Price</h5>
+                            <span>{tickers?.quotes.USD.price.toFixed(2)} $</span>
+                        </OverviewItem>
+                    </Overview>
+                    <Overview>
+                        <OverviewItem>
+                            <h5>Max price</h5>
+                            <span>{tickers?.quotes.USD.ath_price.toFixed(2)} $</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Supply</h5>
+                            <span>{tickers?.total_supply}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <h5>Max supply</h5>
+                            <span>{tickers?.max_supply}</span>
+                        </OverviewItem>
+                    </Overview>
+                </>
+            )}
+            <Chart />
+        </Container>
+    );
+}
+export default Coin;
 // --------------------interface--------------------------
 // Tickers Interface
 interface ITickers {
@@ -188,91 +261,3 @@ interface Whitepaper {
     link: string;
     thumbnail: string;
 }
-
-function Coin() {
-    const { coinId } = useParams();
-    const { isLoading: tickersLoading, data: tickers } = useQuery<ITickers>(
-        ["Tickers", coinId],
-        () => fetchTickers(coinId!),
-        {
-            refetchInterval: 5000,
-        }
-    );
-    const { isLoading: coinInfoLoading, data: coinInfo } = useQuery<ICoinInfo>(
-        ["CoinInfo", coinId],
-        () => fetchInfo(coinId!)
-    );
-    const loading = tickersLoading && coinInfoLoading;
-    const isDark = useRecoilValue(isDarkAtom);
-    const setIsDark = useSetRecoilState(isDarkAtom);
-    const toggleDarkAtom = () => setIsDark((cur) => !cur);
-
-    return (
-        <Container>
-            <HelmetProvider>
-                <Helmet>
-                    <title>{!loading ? coinId : "Loading..."}</title>
-                </Helmet>
-            </HelmetProvider>
-            <Header>
-                <Img src={`https://cryptocurrencyliveprices.com/img/${coinId}.png`} alt="#" />
-                <Title>{!loading ? coinId : "Loading..."}</Title>
-                <HomeBtn>
-                    <Link to="/">Home</Link>
-                </HomeBtn>
-                {isDark ? (
-                    <LMode onClick={toggleDarkAtom}>
-                        <LightMode />
-                    </LMode>
-                ) : (
-                    <ModeBtn onClick={toggleDarkAtom}>
-                        <DarkMode />
-                    </ModeBtn>
-                )}
-            </Header>
-            {!loading ? (
-                <>
-                    <Overview>
-                        <OverviewItem>
-                            <h5>Rank</h5>
-                            <span>{tickers?.rank}</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <h5>Symbol</h5>
-                            <span>{tickers?.symbol}</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <h5>Price</h5>
-                            <span>{tickers?.quotes.USD.price.toFixed(2)} $</span>
-                        </OverviewItem>
-                    </Overview>
-                    <Overview>
-                        <OverviewItem>
-                            <h5>Max price</h5>
-                            <span>{tickers?.quotes.USD.ath_price.toFixed(2)} $</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <h5>Supply</h5>
-                            <span>{tickers?.total_supply}</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <h5>Max supply</h5>
-                            <span>{tickers?.max_supply}</span>
-                        </OverviewItem>
-                    </Overview>
-                </>
-            ) : (
-                <Loading>Loding...</Loading>
-            )}
-            <Content>
-                <ContentBtn>
-                    <Link to={`/${coinId}/chart`}>chart</Link>
-                </ContentBtn>
-            </Content>
-            <Routes>
-                <Route path="chart" element={<Chart />} />
-            </Routes>
-        </Container>
-    );
-}
-export default Coin;

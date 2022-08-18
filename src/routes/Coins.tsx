@@ -4,14 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCoins } from "./api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { isDarkAtom } from "./../atoms";
+import { isDarkState } from "./../atoms";
 import { DarkMode } from "@styled-icons/material/DarkMode";
 import { LightMode } from "@styled-icons/material-rounded/LightMode";
 
 const Container = styled.div`
     padding: 20px;
-    max-width: 480px;
-    margin: 0 auto;
+    width: 70%;
+
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 const Header = styled.header`
     display: flex;
@@ -19,50 +23,50 @@ const Header = styled.header`
     font-size: 60px;
 `;
 const Title = styled.h1`
+    width: 100%;
+    margin: 20px auto;
     color: ${(props) => props.theme.accentColor};
+    @media screen and (max-width: 1024px) {
+        font-size: 40px;
+    }
 `;
 export const ModeBtn = styled.button`
-    position: absolute;
+    position: fixed;
     right: 30px;
-    top: 30px;
-    background-color: #6b6b6b;
+    bottom: 50%;
+    transform: translateY(50%);
     border: none;
     border-radius: 50px;
     width: 50px;
     height: 50px;
-    color: white;
-    transition: all 0.2s ease;
-    &:hover {
-        cursor: pointer;
-        background-color: white;
-        color: #6b6b6b;
+    @media screen and (max-width: 1024px) {
+        bottom: 50px;
     }
 `;
-export const LMode = styled(ModeBtn)`
+export const LModeBtn = styled(ModeBtn)`
     background-color: #ffc93c;
     color: white;
 `;
 const CoinList = styled.ul`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    @media screen and (max-width: 1024px) {
+        flex-direction: column;
+    }
 `;
-const Coin = styled.li`
+const Coin = styled.li``;
+const CoinBtn = styled.button`
     display: flex;
     padding: 15px 30px;
     justify-content: space-between;
-    margin-top: 10px;
+    margin: 10px;
     width: 200px;
     align-items: center;
     background-color: ${(props) => props.theme.btnColor};
     border-radius: 5px;
-    color: ${(props) => props.theme.textColor};
-    transition: all 0.2s ease;
-    &:hover {
-        color: ${(props) => props.theme.accentColor};
-        filter: brightness(0.9);
-    }
 `;
 const Img = styled.img`
     height: 25px;
@@ -86,8 +90,8 @@ interface ICoins {
 }
 function Coins() {
     const { isLoading, data: coins } = useQuery<ICoins[]>(["Coins"], fetchCoins);
-    const isDark = useRecoilValue(isDarkAtom);
-    const setIsDark = useSetRecoilState(isDarkAtom);
+    const isDark = useRecoilValue(isDarkState);
+    const setIsDark = useSetRecoilState(isDarkState);
     const toggleDarkAtom = () => setIsDark((cur) => !cur);
     return (
         <Container>
@@ -98,9 +102,9 @@ function Coins() {
             </HelmetProvider>
             <Header>
                 {isDark ? (
-                    <LMode onClick={toggleDarkAtom}>
+                    <LModeBtn onClick={toggleDarkAtom}>
                         <LightMode />
-                    </LMode>
+                    </LModeBtn>
                 ) : (
                     <ModeBtn onClick={toggleDarkAtom}>
                         <DarkMode />
@@ -114,11 +118,13 @@ function Coins() {
                     {coins?.slice(0, 100).map((coin) => (
                         <Link key={coin?.id} to={coin?.id} state={coin?.name}>
                             <Coin>
-                                <Img
-                                    src={`https://cryptocurrencyliveprices.com/img/${coin?.id}.png`}
-                                    alt="#"
-                                />
-                                {coin?.symbol}
+                                <CoinBtn>
+                                    <Img
+                                        src={`https://cryptocurrencyliveprices.com/img/${coin?.id}.png`}
+                                        alt="#"
+                                    />
+                                    {coin?.symbol}
+                                </CoinBtn>
                             </Coin>
                         </Link>
                     ))}

@@ -2,10 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchChart } from "./api";
 import { useParams } from "react-router-dom";
 import ApexCharts from "react-apexcharts";
-import { useRecoilValue } from "recoil";
-import { isDarkAtom } from "./../atoms";
 
-interface IChart {
+export interface IChart {
     time_open: number;
     time_close: number;
     open: string;
@@ -18,8 +16,8 @@ interface IChart {
 
 export default function Chart() {
     const { coinId } = useParams();
-    const { isLoading, data } = useQuery<IChart[]>(["Chart"], () => fetchChart(coinId!));
-    const isDark = useRecoilValue(isDarkAtom);
+    const { isLoading, data } = useQuery<IChart[] | false>(["Chart"], () => fetchChart(coinId!));
+    if (data === false) return null;
     return (
         <div>
             {isLoading ? (
@@ -27,7 +25,7 @@ export default function Chart() {
             ) : (
                 <ApexCharts
                     type="candlestick"
-                    height={350}
+                    height={300}
                     width={500}
                     series={[
                         {
@@ -44,24 +42,31 @@ export default function Chart() {
                         },
                     ]}
                     options={{
-                        theme: {
-                            mode: isDark ? "dark" : "light",
+                        plotOptions: {
+                            candlestick: {
+                                colors: {
+                                    upward: "#3C90EB",
+                                    downward: "#df4b46",
+                                },
+                            },
                         },
                         chart: {
                             type: "candlestick",
                             height: 350,
+                            toolbar: {
+                                autoSelected: "pan",
+                                show: false,
+                            },
                         },
-                        title: {
-                            text: "CandleStick Chart",
-                            align: "center",
-                        },
+
                         xaxis: {
                             type: "datetime",
+                            labels: {
+                                show: false,
+                            },
                         },
                         yaxis: {
-                            tooltip: {
-                                enabled: true,
-                            },
+                            show: false,
                         },
                     }}
                 />
