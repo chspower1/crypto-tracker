@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/static/js/main.d0794414.js",
-    "static/media/SEBANG-Gothic-OTF.otf": "/static/media/SEBANG-Gothic-OTF.e673ab34f409ada50620.otf",
-    "static/media/SEBANG-Gothic-OTF-Bold.otf": "/static/media/SEBANG-Gothic-OTF-Bold.799512f7506013ea5139.otf",
-    "index.html": "/index.html",
-    "main.d0794414.js.map": "/static/js/main.d0794414.js.map"
+    "main.js": "/crypto-tracker/static/js/main.fc150a1d.js",
+    "static/media/SEBANG-Gothic-OTF.otf": "/crypto-tracker/static/media/SEBANG-Gothic-OTF.e673ab34f409ada50620.otf",
+    "static/media/SEBANG-Gothic-OTF-Bold.otf": "/crypto-tracker/static/media/SEBANG-Gothic-OTF-Bold.799512f7506013ea5139.otf",
+    "index.html": "/crypto-tracker/index.html",
+    "main.fc150a1d.js.map": "/crypto-tracker/static/js/main.fc150a1d.js.map"
   },
   "entrypoints": [
-    "static/js/main.d0794414.js"
+    "static/js/main.fc150a1d.js"
   ]
 }
