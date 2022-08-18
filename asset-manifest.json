@@ -1,12 +1,15 @@
 {
   "files": {
-    "main.js": "/crypto-tracker/static/js/main.2bd28bd5.js",
+    "main.css": "/crypto-tracker/static/css/main.151ea7b0.css",
+    "main.js": "/crypto-tracker/static/js/main.00c8b854.js",
     "static/media/SEBANG-Gothic-OTF.otf": "/crypto-tracker/static/media/SEBANG-Gothic-OTF.e673ab34f409ada50620.otf",
     "static/media/SEBANG-Gothic-OTF-Bold.otf": "/crypto-tracker/static/media/SEBANG-Gothic-OTF-Bold.799512f7506013ea5139.otf",
     "index.html": "/crypto-tracker/index.html",
-    "main.2bd28bd5.js.map": "/crypto-tracker/static/js/main.2bd28bd5.js.map"
+    "main.151ea7b0.css.map": "/crypto-tracker/static/css/main.151ea7b0.css.map",
+    "main.00c8b854.js.map": "/crypto-tracker/static/js/main.00c8b854.js.map"
   },
   "entrypoints": [
-    "static/js/main.2bd28bd5.js"
+    "static/css/main.151ea7b0.css",
+    "static/js/main.00c8b854.js"
   ]
 }
