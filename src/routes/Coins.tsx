@@ -5,6 +5,8 @@ import { fetchCoins } from "./api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isDarkAtom } from "./../atoms";
+import { DarkMode } from "@styled-icons/material/DarkMode";
+import { LightMode } from "@styled-icons/material-rounded/LightMode";
 
 const Container = styled.div`
     padding: 20px;
@@ -17,7 +19,28 @@ const Header = styled.header`
     font-size: 60px;
 `;
 const Title = styled.h1`
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.accentColor};
+`;
+export const ModeBtn = styled.button`
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    background-color: #6b6b6b;
+    border: none;
+    border-radius: 50px;
+    width: 50px;
+    height: 50px;
+    color: white;
+    transition: all 0.2s ease;
+    &:hover {
+        cursor: pointer;
+        background-color: white;
+        color: #6b6b6b;
+    }
+`;
+export const LMode = styled(ModeBtn)`
+    background-color: #ffc93c;
+    color: white;
 `;
 const CoinList = styled.ul`
     display: flex;
@@ -32,9 +55,9 @@ const Coin = styled.li`
     margin-top: 10px;
     width: 200px;
     align-items: center;
-    background-color: white;
+    background-color: ${(props) => props.theme.btnColor};
     border-radius: 5px;
-    color: ${(props) => props.theme.bgColor};
+    color: ${(props) => props.theme.textColor};
     transition: all 0.2s ease;
     &:hover {
         color: ${(props) => props.theme.accentColor};
@@ -74,7 +97,16 @@ function Coins() {
                 </Helmet>
             </HelmetProvider>
             <Header>
-                <button onClick={toggleDarkAtom}>{isDark ? "DarkMode" : "LightMode"}</button>
+                {isDark ? (
+                    <LMode onClick={toggleDarkAtom}>
+                        <LightMode />
+                    </LMode>
+                ) : (
+                    <ModeBtn onClick={toggleDarkAtom}>
+                        <DarkMode />
+                    </ModeBtn>
+                )}
+
                 <Title>Coin World</Title>
             </Header>
             {!isLoading ? (

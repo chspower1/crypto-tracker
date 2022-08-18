@@ -5,6 +5,11 @@ import Price from "./Price";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInfo, fetchTickers } from "./api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { LMode, ModeBtn } from "./Coins";
+import { DarkMode } from "@styled-icons/material/DarkMode";
+import { LightMode } from "@styled-icons/material-rounded/LightMode";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "./../atoms";
 
 // ------------------------styled-components-----------------------
 const Container = styled.div`
@@ -39,7 +44,7 @@ const Overview = styled.section`
     align-items: center;
     width: 100%;
     border-radius: 10px;
-    background-color: #1f1f1f;
+    background-color: ${(props) => props.theme.btnColor};
     margin: 10px 30px;
     padding: 20px;
 `;
@@ -66,11 +71,12 @@ const HomeBtn = styled.button`
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
+    color: white;
     background-color: #3275ac;
 `;
 const ContentBtn = styled(HomeBtn)`
-    width: 50%;
-    margin: 5px 20px;
+    width: 100%;
+    margin-bottom: 20px;
 `;
 const Content = styled.div`
     width: 100%;
@@ -198,6 +204,9 @@ function Coin() {
         () => fetchInfo(coinId!)
     );
     const loading = tickersLoading && coinInfoLoading;
+    const isDark = useRecoilValue(isDarkAtom);
+    const setIsDark = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom = () => setIsDark((cur) => !cur);
 
     return (
         <Container>
@@ -212,6 +221,15 @@ function Coin() {
                 <HomeBtn>
                     <Link to="/">Home</Link>
                 </HomeBtn>
+                {isDark ? (
+                    <LMode onClick={toggleDarkAtom}>
+                        <LightMode />
+                    </LMode>
+                ) : (
+                    <ModeBtn onClick={toggleDarkAtom}>
+                        <DarkMode />
+                    </ModeBtn>
+                )}
             </Header>
             {!loading ? (
                 <>
@@ -251,13 +269,9 @@ function Coin() {
                 <ContentBtn>
                     <Link to={`/${coinId}/chart`}>chart</Link>
                 </ContentBtn>
-                <ContentBtn>
-                    <Link to={`/${coinId}/price`}>price</Link>
-                </ContentBtn>
             </Content>
             <Routes>
                 <Route path="chart" element={<Chart />} />
-                <Route path="price" element={<Price />} />
             </Routes>
         </Container>
     );
