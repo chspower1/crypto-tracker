@@ -1,7 +1,6 @@
 import { Link, Route, Routes, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Chart from "./Chart";
-import Price from "./Price";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInfo, fetchTickers } from "./api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
